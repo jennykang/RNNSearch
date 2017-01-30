@@ -15,19 +15,21 @@ TRAIN_PATH = os.path.join(FLAGS.train_dir, "train.rawcode.txt")
 VALID_PATH = os.path.join(FLAGS.valid_dir, "valid.rawcode.txt")
 TEST_PATH = os.path.join(FLAGS.test_dir, "test.rawcode.txt")
 
-SAMPLE_PATH = "./data/sample/rawcodeshort.txt"
+SAMPLE_PATH1 = "./data/sample/methname.txt"
+SAMPLE_PATH2 = "./data/sample/rawcode.txt"
 
 #tokenize data by splitting at whitespace for each line
 def tokenizer_func(filename):
     lines = open(filename).readlines()
+    #whole file used as input to build dictionary for generating ids
     words = lines[0].split()
     for x in range(1, len(lines)):
-        words = words + lines[x].split()
-
+       words = words + lines[x].split()
     return words
 
-words = tokenizer_func(SAMPLE_PATH)
-print words
+input1 = tokenizer_func(SAMPLE_PATH1)
+input2 = tokenizer_func(SAMPLE_PATH2)
+
 vocabulary_size = 50000
 
 #build dictionary for each line
@@ -53,10 +55,20 @@ def build_dataset(words):
     reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
     return data, count, dictionary, reverse_dictionary
 
-data, count, dictionary, reverse_dictionary = build_dataset(words)
-del words #reduce memory
-
-print('Most common words (+UNK)', count[:5])
-print('Sample data', data[:5], [reverse_dictionary[i] for i in data[:5]])
+data1, count1, dictionary1, reverse_dictionary1 = build_dataset(input1)
+data2, count2, dictionary2, reverse_dictionary2 = build_dataset(input2)
+del input1 #reduce memory
+del input2
 
 data_index = 0
+
+def build_ids_sequence(filename, dictionary):
+    lines = open(filename).readlines()
+    for x in range(0, len(lines)):
+        lines[x] = lines[x].split()
+        for y in range(0, len(lines[x])):
+            lines[x][y] = dictionary[lines[x][y]]
+
+    return lines
+
+inputlines1 = build_input_arr(SAMPLE_PATH1, dictionary1)
