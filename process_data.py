@@ -60,7 +60,15 @@ data2, count2, dictionary2, reverse_dictionary2 = build_dataset(input2)
 del input1 #reduce memory
 del input2
 
-data_index = 0
+def write_dataset(dictionary, filename): 
+    #write dataset to file
+    with open(filename, 'w') as dictionaryfile:
+        for key in dictionary:
+            dictionaryfile.write(key + '\n')
+
+#write vocabulary based on dictionaries
+write_dataset(dictionary1, './data/dictionary/dictionary1.txt')
+write_dataset(dictionary2, './data/dictionary/dictionary2.txt')
 
 def build_ids_sequence(filename, dictionary):
     lines = open(filename).readlines()
@@ -71,4 +79,23 @@ def build_ids_sequence(filename, dictionary):
 
     return lines
 
-inputlines1 = build_input_arr(SAMPLE_PATH1, dictionary1)
+context = build_ids_sequence(SAMPLE_PATH1, dictionary1)
+response = build_ids_sequence(SAMPLE_PATH2, dictionary2)
+
+def build_example_train(context, response):
+    example = tf.train.Example()
+    example.features.feature["context"].int64_list.value.extend(context)
+    example.features.feature["response"].int64_list.value.extend(response)
+
+    #TODO: build distractor sequences
+
+    return example
+
+def build_example_test(context, response):
+    example = tf.train.Example()
+    example.features.feature["context"].int64_list.value.extend(context)
+    example.features.feature["response"].int64_list.value.extend(response)
+
+    #TODO: distractor sequences
+
+    return example
