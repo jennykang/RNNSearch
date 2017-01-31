@@ -15,7 +15,7 @@ TRAIN_PATH = os.path.join(FLAGS.train_dir, "train.rawcode.txt")
 VALID_PATH = os.path.join(FLAGS.valid_dir, "valid.rawcode.txt")
 TEST_PATH = os.path.join(FLAGS.test_dir, "test.rawcode.txt")
 
-SAMPLE_PATH1 = "./data/sample/methname.txt"
+SAMPLE_PATH1 = "./data/sample/desc.txt"
 SAMPLE_PATH2 = "./data/sample/rawcode.txt"
 
 #tokenize data by splitting at whitespace for each line
@@ -70,17 +70,20 @@ def write_dataset(dictionary, filename):
 write_dataset(dictionary1, './data/dictionary/dictionary1.txt')
 write_dataset(dictionary2, './data/dictionary/dictionary2.txt')
 
-def build_ids_sequence(filename, dictionary):
-    lines = open(filename).readlines()
-    for x in range(0, len(lines)):
-        lines[x] = lines[x].split()
-        for y in range(0, len(lines[x])):
-            lines[x][y] = dictionary[lines[x][y]]
+def build_ids_sequence(readfile, dictionary, writefile):
+    with open(writefile, 'w') as sequencefile:
+        lines = open(readfile).readlines()
+        for x in range(0, len(lines)):
+            lines[x] = lines[x].split()
+            for y in range(0, len(lines[x])):
+                lines[x][y] = dictionary[lines[x][y]]
+                sequencefile.write(str(lines[x][y]) + ' ')
+            sequencefile.write('\n')
 
     return lines
 
-context = build_ids_sequence(SAMPLE_PATH1, dictionary1)
-response = build_ids_sequence(SAMPLE_PATH2, dictionary2)
+context = build_ids_sequence(SAMPLE_PATH1, dictionary1, './data/sequence/context.txt')
+response = build_ids_sequence(SAMPLE_PATH2, dictionary2,'./data/sequence/response.txt')
 
 def build_example_train(context, response):
     example = tf.train.Example()
