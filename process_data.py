@@ -32,7 +32,7 @@ input2 = tokenizer_func(SAMPLE_PATH2)
 
 vocabulary_size = 50000
 
-#build dictionary for each line
+#build dictionary for each dataset
 def build_dataset(words):
     count = [['UNK', -1]]
     count.extend(collections.Counter(words).most_common(vocabulary_size - 1))
